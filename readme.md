@@ -1,4 +1,4 @@
-# Sequelize CUID on web
+# CRUD
 ## 기능
 브라우저로 db를 조작 가능.  
 ## 조작
@@ -10,6 +10,8 @@ db의 내용을 JSON으로 받아서 변수에 저장.
 테이블의 컬럼에 각 레코드의 index와 필드명을 속성으로 넣음.  
 변수에서 index를 활용해서 id같은 필드의 값을 읽음.  
 id, createdAt, updateAt, deleteAt필드는 사용자가 값을 새로 넣거나 수정하지 못함.  
+## 로그인
+구글 로그인을 해야 db를 조작 가능.  
 
 ## http methods
 | http메서드   |      주소      |입력|  역할(출력) |
