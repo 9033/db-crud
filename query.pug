@@ -1,0 +1,59 @@
+doctype html
+html
+    head
+        meta(charset='UTF-8')
+        meta(name="viewport" content="width=device-width, initial-scale=1.0")
+        meta(name="format-detection" content="telephone=no")
+        style.
+            table {
+                border: 1px solid black;
+                border-collapse: collapse;
+            }
+
+            table th, table td {
+                border: 1px solid black;
+            }
+    body
+        table
+            - const rr=r;//JSON.parse(r);
+            - const f=columns;//JSON.parse(columns);
+            - const jsonr=JSON.stringify(r).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+            - const jsonf=JSON.stringify(columns).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+            tr
+                th
+                for i in f
+                    th=i                    
+            each row, idx in rr
+                tr
+                    //.data
+                    td
+                        button.del(i=idx disabled) 삭제
+                    each col, i in row
+                        case i
+                            when 'id'
+                            when 'createdAt'
+                            when 'updatedAt'
+                            when 'deletedAt'
+                                td(i=idx f=i) #{col}
+                            default
+                                td.cell(i=idx f=i) #{col}
+            tr
+                td
+                    button.add(disabled) 추가하기
+                each name, i in f
+                        case name
+                            when 'id'
+                            when 'createdAt'
+                            when 'updatedAt'
+                            when 'deletedAt'
+                                td
+                            default
+                                td.cell(name=name)
+                                    input.add(type='text' name=name disabled)
+        script.
+            const r=JSON.parse('!{jsonr}');
+            const fields=JSON.parse('!{jsonf}');
+        script(src="front.js")
+        include views/excel.html
+        include views/google-auth.html
+        
