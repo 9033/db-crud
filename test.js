@@ -66,4 +66,36 @@ const main2=async (init=false)=>{
     console.log(r)
 }
 
-main2()
+// main2()
+
+/*
+2020-05-26:
+    dynamodb 코드 test.
+    dynamodb 적용 계획.
+        package table CRUD.
+        trueuser table CRUD.
+*/
+// cf. https://github.com/aws-samples/aws-nodejs-sample
+const AWS = require('aws-sdk');
+AWS.config.update({
+  region: "ap-northeast-2",
+});
+const dynamodb = new AWS.DynamoDB();
+const docClient = new AWS.DynamoDB.DocumentClient();
+
+// dynamodb.getItem({
+//     TableName:"images",
+//     Key:{
+//         "name":{
+//             S:"images/05.jpg",
+//         }
+//     },
+// }).promise().then(console.log)
+
+// get list
+// https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/DynamoDB/DocumentClient.html#scan-property
+docClient.scan({
+    TableName: "images",
+    // KeyConditionExpression:"",
+    Limit: 1,
+}).promise().then(console.log)
