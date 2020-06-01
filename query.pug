@@ -28,15 +28,19 @@ html
                     //.data
                     td
                         button.del(i=idx disabled) 삭제
+                    // 지정한 컬럼.
+                    for i in f 
+                        td.cell(i=idx f=i) #{row[i]}
+                    // 나머지 컬럼.
                     each col, i in row
                         case i
                             when 'id'
                             when 'createdAt'
                             when 'updatedAt'
                             when 'deletedAt'
-                                td(i=idx f=i) #{col}
+                                // td(i=idx f=i) #{col}
                             default
-                                td.cell(i=idx f=i) #{col}
+                                // td.cell(i=idx f=i) #{col}
             tr
                 td
                     button.add(disabled) 추가하기

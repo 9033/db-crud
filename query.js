@@ -33,10 +33,33 @@ async function verify(token) {
 }
 // verify().catch(console.error);
 
+/*
+{columns, ren:rows}
+couumns: query.pug에서 출력할 컬럼을 지정.
+*/
 
 const pug=require('pug');
 const http=require('http');
 const fs=require('fs');
+
+const AWS = require('aws-sdk');
+AWS.config.update({
+  region: "ap-northeast-2",
+});
+const dynamodb = new AWS.DynamoDB();
+const docClient = new AWS.DynamoDB.DocumentClient();
+
+const getPackages = async () =>{
+    let r = await docClient.scan({
+        TableName : 'packages',
+    }).promise()
+    
+    let columns = ['title','start_time','end_time','comment'];
+    let rows = r.Items
+    console.log(rows);
+    
+    return {columns, ren:rows}
+}
 
 const getAllData = (table) => async () =>{
     let columns=[];
@@ -67,7 +90,7 @@ const getUsers = async (req)=>{
     return {columns, ren:rows}
 }
 
-const getRead = (req, res) => (func, callback) => {
+const getRead = (req, res) => (func, callback) => { // preset of then, catch, finally
     return func(req).then(callback)
     .catch(e=>{console.error(e);res.writeHead(404,'NOT FOUND')}).finally(()=>{res.end()})
 }
@@ -133,7 +156,7 @@ function serverFn(req,res){
     console.log('SERVER : res');
     if(req.method=='GET'){//cRud or serve static
         if(req.url=='/'){
-            getRead(req, res)(getUsers, ({columns, ren})=>{
+            getRead(req, res)(getPackages, ({columns, ren})=>{
                     // console.log('SERVER : render',ren);
                     res.writeHead(200, {'Content-Type':  'text/html' }); 
                     res.write(pug.renderFile('query.pug',{columns,r:ren}));
