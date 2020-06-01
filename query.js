@@ -111,26 +111,32 @@ const checkTrueuser = async (id_token)=>{
     // if(!r)throw 'user error';
     return !!r
 }
-const postPackage = async (id_token, reqBody)=>{
-    // const r = await checkTrueuser(id_token);
-    // if(!r)throw 'user error';
-    // console.log(r);
-    const removeCols=['id','createdAt','updatedAt','deletedAt'];//삭제할 필드
+const postPackage = async (reqBody)=>{
+    // console.log(reqBody);    
+    const nowDate = new Date();
     if( Array.isArray(reqBody) ){ //excel 업로드에 사용.
-        for(let idx = 0;idx<b.length;idx++){
-            removeCols.forEach(col=>{
-                delete reqBody[idx][col];
-            });
-        }
-        // console.log(b);
-        await db.packages.bulkCreate(reqBody)
     }
     else{
-        removeCols.forEach(col=>{
-            delete reqBody[col];
-        });
-        // console.log(b);
-        await db.packages.create(reqBody)
+        await dynamodb.putItem({
+            Item:{
+                title:{
+                    S:reqBody.title,
+                },
+                create_time:{
+                    S:nowDate.toISOString(),
+                },
+                start_time:{
+                    S:(new Date(reqBody.start_time)).toISOString(),
+                },
+                end_time:{
+                    S:(new Date(reqBody.end_time)).toISOString(),
+                },
+                comment:{
+                    S:reqBody.comment,
+                }
+            },
+            TableName: "packages"
+        }).promise()
     }
 }
 const deletePackage = async (id_token, packages_id)=>{
@@ -246,7 +252,7 @@ function serverFn(req,res){
             const b=JSON.parse(body);
             // console.log('POST 본문(body):',b);
             
-            postPackage(req.headers.id_token, b)
+            postPackage(b)
             .then(()=>{
                 console.log('POST ok');
                 res.end('POST ok!');
