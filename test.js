@@ -193,10 +193,26 @@ scan일때는 숫자는 숫자로.
 //     },    
 // }).promise().then(r => console.log(JSON.stringify(r, null, 2)))
 
-docClient.scan({
-    TableName : 'packages',
-    FilterExpression : ':to_date BETWEEN start_date AND end_date',
-    ExpressionAttributeValues : {
-        ':to_date' : Date.parse('2020-06-31'),
-    },    
-}).promise().then(r => console.log(JSON.stringify(r, null, 2)))
+// docClient.scan({
+//     TableName : 'packages',
+//     FilterExpression : ':to_date BETWEEN start_date AND end_date',
+//     ExpressionAttributeValues : {
+//         ':to_date' : Date.parse('2020-06-31'),
+//     },    
+// }).promise().then(r => console.log(JSON.stringify(r, nul 2)))
+
+// hashing user id
+// const crypto = require('crypto');
+// const hash = crypto.createHash('sha256');
+// hash.update('');
+// console.log(hash.digest('base64'))
+
+// check trueuser
+dynamodb.getItem({
+    TableName:"trueuser",
+    Key:{
+        "userhash":{
+            S:"myhash",
+        }
+    },
+}).promise().then(console.log)

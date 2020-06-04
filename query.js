@@ -95,21 +95,26 @@ const getRead = (req, res) => (func, callback) => { // preset of then, catch, fi
     .catch(e=>{console.error(e);res.writeHead(404,'NOT FOUND')}).finally(()=>{res.end()})
 }
 
-const checkTrueuser = async (id_token)=>{
+const crypto = require('crypto');
+const hash = crypto.createHash('sha256');
+const checkTrueuser = async (id_token)=>{ // 사용자를 확인.
     if(typeof id_token !== typeof 'String' || id_token === 'undefined'){
         // console.error('token not received')
         // throw 'token not received';
         return false
     }
     const access_user = await verify(id_token)
-    const r = await db.trueuser.findOne({
-        where:{
-            id_str:access_user,
-        }
-    })
-    // console.log(access_user,r);
-    // if(!r)throw 'user error';
-    return !!r
+    hash.update(access_user);
+    const hashed_access_user = hash.digest('base64'); 
+    const r = await dynamodb.getItem({
+        TableName:"trueuser",
+        Key:{
+            "userhash":{
+                S:hashed_access_user,
+            }
+        },
+    }).promise();
+    return !!r.Item
 }
 const postPackage = async (reqBody)=>{
     // console.log(reqBody);    
