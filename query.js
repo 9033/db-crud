@@ -68,28 +68,27 @@ const preProcessSet = {}
 preProcessSet['start_time'] = v => (new Date(v)).toISOString();
 preProcessSet['end_time'] = v => (new Date(v)).toISOString();
 const preProcessCol = (colName, val = null) => preProcessSet[colName]?preProcessSet[colName](val):val
+const rowToItem = (row) => {
+    const cols = ['title','start_time','end_time','comment'] // 입력 받을 필드.
+    const Item = {}
+    for(let k of cols){
+        Item[k] = {}
+        Item[k]['S'] = preProcessCol(k,row[k])
+    }
+    return Item;
+}
 const postPackage = async (reqBody)=>{
     // console.log(reqBody);    
     if( Array.isArray(reqBody) ){ //excel 업로드에 사용.
     }
     else{
+        const Item = rowToItem(reqBody);
         await dynamodb.putItem({
             Item:{
-                title:{
-                    S:preProcessCol('title',reqBody.title),
-                },
+                ...Item,
                 create_time:{
                     S:(new Date()).toISOString(),
                 },
-                start_time:{
-                    S:preProcessCol('start_time',reqBody.start_time),
-                },
-                end_time:{
-                    S:preProcessCol('end_time',reqBody.end_time),
-                },
-                comment:{
-                    S:preProcessCol('comment',reqBody.comment),
-                }
             },
             TableName: "packages"
         }).promise()
