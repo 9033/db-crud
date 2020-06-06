@@ -39,9 +39,9 @@ function clickdel(e){
     modify=true;
     document.querySelectorAll("button.add, button.del").forEach(c=>{c.disabled=true;});
 
-    const id=e.target.parentNode.nextSibling.innerText;
+    const id=e.target.getAttribute('i');
     console.log(id);
-    xmxhr('DELETE',id);
+    xmxhr('DELETE',r[id]);
 }
 
 //추가 버튼을 클릭

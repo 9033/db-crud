@@ -115,9 +115,9 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 // dynamodb.listTables().promise().then(console.log)
 
 // table의 성질
-// dynamodb.describeTable({
-//     TableName: "packages",
-// }).promise().then(r=>console.log(JSON.stringify(r, null, 2)))
+dynamodb.describeTable({
+    TableName: "packages",
+}).promise().then(r=>console.log(JSON.stringify(r, null, 2)))
 
 // table 만들기
 let params = {
@@ -208,16 +208,34 @@ scan일때는 숫자는 숫자로.
 // console.log(hash.digest('base64'))
 
 // check trueuser
-dynamodb.getItem({
-    TableName:"trueuser",
-    Key:{
-        "userhash":{
-            S:"myhash",
-        }
-    },
-}).promise().then(console.log)
+// dynamodb.getItem({
+//     TableName:"trueuser",
+//     Key:{
+//         "userhash":{
+//             S:"myhash",
+//         }
+//     },
+// }).promise().then(console.log)
 
 // 구글 인증 파일을 분리.
 // const googleAuth = require('./js/google-auth')
 // const r = googleAuth.verify('a').then(console.log).catch(console.error)
 // console.log(r)
+
+// remove item
+// dynamodb.deleteItem({
+//     Key:{
+//         title:{
+//             S:'자서전'
+//         },
+//         create_time:{
+//             S:'2020-06-01T21:27:30.843Z',
+//         },
+//     },
+//     TableName: "packages"
+// }).promise().then(r => console.log(JSON.stringify(r, null, 2)))
+// .finally(()=>{
+//     docClient.scan({
+//         TableName : 'packages',        
+//     }).promise().then(r => console.log(JSON.stringify(r, null, 2)))
+// })

@@ -18,6 +18,13 @@ AWS.config.update({
 const dynamodb = new AWS.DynamoDB();
 const docClient = new AWS.DynamoDB.DocumentClient();
 
+const keysPackages = async () =>{
+    // find pk columns
+    const t = await dynamodb.describeTable({
+        TableName: "packages",
+    }).promise()
+    return t.Table.KeySchema.filter(k=>['HASH','RANGE'].includes(k.KeyType)).map(k=>k.AttributeName)
+}
 const getPackages = async () =>{
     let r = await docClient.scan({
         TableName : 'packages',
@@ -25,7 +32,7 @@ const getPackages = async () =>{
     
     let columns = ['title','start_time','end_time','comment'];
     let rows = r.Items
-    console.log(rows);
+    // console.log(rows);
     
     return {columns, ren:rows}
 }
@@ -84,11 +91,18 @@ const postPackage = async (reqBody)=>{
         }).promise()
     }
 }
-const deletePackage = async (id_token, packages_id)=>{
-    // const r = await checkTrueuser(id_token);
-    // if(!r)throw 'user error';
-    // console.log(r);
-    await db.packages.destroy({where:{id:packages_id}})
+const deletePackage = async (row)=>{
+    // filtering attributes
+    const Key = {}
+    const keys = await keysPackages()
+    for(let k of keys){
+        Key[k] = {}
+        Key[k]['S'] = row[k]
+    }
+    await dynamodb.deleteItem({
+        Key,
+        TableName: "packages"
+    }).promise()
 }
 const patchPackage = async (id_token, b)=>{
     // const r = await checkTrueuser(id_token);
@@ -174,9 +188,9 @@ function serverFn(req,res){
             body+=d;
         });
         return req.on('end',()=>{
-            const b=parseInt(JSON.parse(body),10);
+            const b=JSON.parse(body);
             // console.log('DELETE 본문(body):',b);
-            deletePackage(req.headers.id_token, b)
+            deletePackage(b)
             .then(r=>{
                 console.log('destroy ok');
                 res.end('DELETE ok!');
