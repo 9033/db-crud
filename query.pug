@@ -17,7 +17,7 @@ html
         table
             - //r: rows of table, columns
             - const rows=r;//JSON.parse(r);
-            - const cols=columns;//JSON.parse(columns);
+            - const cols=columns;//JSON.parse(columns); // 출력으로 지정한 컬럼만 보여줌.
             - const jsonRows=JSON.stringify(rows).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
             - const jsonCols=JSON.stringify(cols).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
             tr
@@ -28,13 +28,11 @@ html
                 tr
                     td
                         button.del(i=idx disabled) 삭제
-                    // 지정한 컬럼.
                     for colName in cols
                         td.cell(i=idx f=colName) #{row[colName]}
             tr
                 td
                     button.add(disabled) 추가하기
-                // 지정한 컬럼.
                 for colName in cols
                     td.cell(name=colName)
                         input.add(type='text' name=colName disabled)
