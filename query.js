@@ -158,7 +158,7 @@ function serverFn(req,res){
             )
         }
         else if(req.url=='/json'){// json파일 출력.
-            getRead(req, res)(getUsers, ({columns, ren})=>{
+            getRead(req, res)(getPackages, ({columns, ren})=>{
                     // console.log('SERVER : render',ren);
                     res.writeHead(200, {'Content-Type':  'application/json' });                 
                     res.write( JSON.stringify(ren) );
@@ -166,7 +166,7 @@ function serverFn(req,res){
             )
         }
         else if(/^\/[^/\\:*?"<>|]+\.ods$/.test(req.url)){// ods파일 출력. // 윈도우 기준.
-            getRead(req, res)(getUsers, ({columns, ren})=>{
+            getRead(req, res)(getPackages, ({columns, ren})=>{
                     // console.log('SERVER : render',ren);
                     res.writeHead(200, {'Content-Type':  'application/vnd.oasis.opendocument.spreadsheet' });                 
 
