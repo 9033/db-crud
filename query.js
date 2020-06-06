@@ -63,28 +63,32 @@ const checkTrueuser = async (id_token)=>{ // 사용자를 확인.
     }).promise();
     return !!r.Item
 }
+// 입력값 전처리.
+const preProcessSet = {}
+preProcessSet['start_time'] = v => (new Date(v)).toISOString();
+preProcessSet['end_time'] = v => (new Date(v)).toISOString();
+const preProcessCol = (colName, val = null) => preProcessSet[colName]?preProcessSet[colName](val):val
 const postPackage = async (reqBody)=>{
     // console.log(reqBody);    
-    const nowDate = new Date();
     if( Array.isArray(reqBody) ){ //excel 업로드에 사용.
     }
     else{
         await dynamodb.putItem({
             Item:{
                 title:{
-                    S:reqBody.title,
+                    S:preProcessCol('title',reqBody.title),
                 },
                 create_time:{
-                    S:nowDate.toISOString(),
+                    S:(new Date()).toISOString(),
                 },
                 start_time:{
-                    S:(new Date(reqBody.start_time)).toISOString(),
+                    S:preProcessCol('start_time',reqBody.start_time),
                 },
                 end_time:{
-                    S:(new Date(reqBody.end_time)).toISOString(),
+                    S:preProcessCol('end_time',reqBody.end_time),
                 },
                 comment:{
-                    S:reqBody.comment,
+                    S:preProcessCol('comment',reqBody.comment),
                 }
             },
             TableName: "packages"
@@ -117,7 +121,7 @@ const patchPackage = async (b)=>{
         },
         ExpressionAttributeValues: {
             ":val": {
-                S: b.toval,
+                S: preProcessCol(b.field,b.toval),
             },
         },
         Key,
