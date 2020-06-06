@@ -113,7 +113,7 @@ const deletePackage = async (row)=>{
         TableName: "packages"
     }).promise()
 }
-const patchPackage = async (b)=>{
+const patchPackage = async (b)=>{ // 지정한 컬럼만 값을 수정.
     // console.log(b);
     const Key = await tableKeys(b.row)
     await dynamodb.updateItem({
