@@ -91,7 +91,7 @@ const postPackage = async (reqBody)=>{
         }).promise()
     }
 }
-const deletePackage = async (row)=>{
+const tableKeys = async (row)=>{ // param에 들어갈 Key를 생성.
     // filtering attributes
     const Key = {}
     const keys = await keysPackages()
@@ -99,20 +99,31 @@ const deletePackage = async (row)=>{
         Key[k] = {}
         Key[k]['S'] = row[k]
     }
+    return Key;
+}
+const deletePackage = async (row)=>{
+    const Key = await tableKeys(row)
     await dynamodb.deleteItem({
         Key,
         TableName: "packages"
     }).promise()
 }
-const patchPackage = async (id_token, b)=>{
-    // const r = await checkTrueuser(id_token);
-    // if(!r)throw 'user error';
-    // console.log(r);
-    const o={};
-    o[b.field]=b.toval;//한번에 한가지 컬럼만 수정이 가능.
-    if(['id','createdAt','updatedAt','deletedAt'].every(v=>v!=b.field)){//수정하려는 필드가 특정 필드가 아닐때
-        await db.packages.update(o,  {where:{id:b.id}})
-    }
+const patchPackage = async (b)=>{
+    console.log(b);
+    const Key = await tableKeys(b.row)
+    await dynamodb.updateItem({
+        ExpressionAttributeNames: {
+            "#colName": b.field,
+        },
+        ExpressionAttributeValues: {
+            ":val": {
+                S: b.toval,
+            },
+        },
+        Key,
+        TableName: "packages",
+        UpdateExpression: "SET #colName = :val",
+    }).promise()
 }
 /*
 db를 수정하거나 삭제나 추가한후 새로고침 한다. 그외에 방법으로 응답으로 json을 받아서 다시 front에서 그려주는 방법이 있다.
@@ -170,7 +181,7 @@ function serverFn(req,res){
         return req.on('end',()=>{
             const b=JSON.parse(body);
             // console.log('PATCH 본문(body):',b);
-            patchPackage(req.headers.id_token, b)
+            patchPackage(b)
             .then(r=>{
                 console.log('update ok');
                 res.end('PATCH ok!');

@@ -115,9 +115,9 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 // dynamodb.listTables().promise().then(console.log)
 
 // table의 성질
-dynamodb.describeTable({
-    TableName: "packages",
-}).promise().then(r=>console.log(JSON.stringify(r, null, 2)))
+// dynamodb.describeTable({
+//     TableName: "packages",
+// }).promise().then(r=>console.log(JSON.stringify(r, null, 2)))
 
 // table 만들기
 let params = {
@@ -239,3 +239,30 @@ scan일때는 숫자는 숫자로.
 //         TableName : 'packages',        
 //     }).promise().then(r => console.log(JSON.stringify(r, null, 2)))
 // })
+
+// update item
+dynamodb.updateItem({
+    ExpressionAttributeNames: {
+        "#colName": "comment",
+    },
+    ExpressionAttributeValues: {
+        ":val": {
+            S: "이명박명수"
+        },
+    },
+    Key: {
+        title: {
+            S: '자서전'
+        },
+        create_time: {
+            S: (new Date()).toISOString(),
+        },
+    },
+    TableName: "packages",
+    UpdateExpression: "SET #colName = :val",
+}).promise().then(r => console.log(JSON.stringify(r, null, 2)))
+.finally(()=>{
+    docClient.scan({
+        TableName : 'packages',        
+    }).promise().then(r => console.log(JSON.stringify(r, null, 2)))
+})
