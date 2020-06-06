@@ -36,7 +36,6 @@ const getRead = (req, res) => (func, callback) => { // preset of then, catch, fi
 }
 
 const crypto = require('crypto');
-const hash = crypto.createHash('sha256');
 const checkTrueuser = async (id_token)=>{ // 사용자를 확인.
     if(typeof id_token !== typeof 'String' || id_token === 'undefined'){
         // console.error('token not received')
@@ -44,6 +43,7 @@ const checkTrueuser = async (id_token)=>{ // 사용자를 확인.
         return false
     }
     const access_user = await googleAuth.verify(id_token)
+    const hash = crypto.createHash('sha256'); // ERR_CRYPTO_HASH_FINALIZED 에러로 인해서 여기로 옮김.
     hash.update(access_user);
     const hashed_access_user = hash.digest('base64'); 
     const r = await dynamodb.getItem({
