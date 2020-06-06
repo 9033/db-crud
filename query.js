@@ -1,19 +1,5 @@
 const db=require('./models');
 const XLSX=require('xlsx')
-
-const Sequelize = require('sequelize');
-
-
-// const r=async (init=false)=>{//db초기화
-//     if(init){/* db의 데이터를 초기화 */
-//         let ret=await db.package.sync({force:true});
-//     }
-//     else{/* db의 데이터를 그대로 사용. */        
-//         await db.package.sync();
-//     }
-// };
-// r();
-
 const googleAuth = require('./js/google-auth')
 
 /*
@@ -41,35 +27,6 @@ const getPackages = async () =>{
     let rows = r.Items
     console.log(rows);
     
-    return {columns, ren:rows}
-}
-
-const getAllData = (table) => async () =>{
-    let columns=[];
-    const descTable=await table.describe();
-    for(i in descTable){
-        if(i == 'createdAt' || i == 'updatedAt' || i == 'deletedAt')continue
-        columns.push(i);
-    }
-    // console.log(columns);          
-
-    const o={
-        attributes:[...columns,[Sequelize.literal('case (end_time <= datetime("now")) when 1 then ("end") else case (datetime("now") BETWEEN start_time AND end_time) when 1 then "now" else "not yet" end end'),'between']],
-        order:[Sequelize.literal('datetime("now") BETWEEN start_time AND end_time desc'),'end_time'],
-    };    
-    columns.push('between')
-    const datas=await table.findAll(o);
-    let rows=[];
-    for(i in datas){
-        rows.push( datas[i].get() );
-    }
-    return {columns, rows}
-}
-
-const getUsers = async (req)=>{
-    // const r = await checkTrueuser(req.headers.id_token); 
-    // if(!r)return {columns:[],ren:[]};
-    const {columns, rows} = await getAllData(db.packages)()
     return {columns, ren:rows}
 }
 
@@ -275,16 +232,3 @@ const server=http.createServer(function (req, res) {
 server.listen(80, ()=>{
      console.log('SERVER : listen');
 });
-
-db.sequelize.query('select id_str from trueuser;', {type : db.sequelize.QueryTypes.SELECT })
-.then(v=>{
-    console.log(v)
-})
-// db.trueuser.findOrCreate({
-//     where:{
-//         id_str:'',
-//     },
-//     defaults:{
-//         id_str:'',
-//     }
-// })
