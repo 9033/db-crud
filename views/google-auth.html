@@ -25,7 +25,7 @@ function onSignIn(googleUser) {
 
   var id_token = googleUser.getAuthResponse().id_token;
   buttonSet(true)
-  document.querySelector('section.excelUp').style.display = 'inline';
+  // document.querySelector('section.excelUp').style.display = 'inline';
   document.querySelector('section.excelDown').style.display = 'inline';
   document.querySelector('#signOutBtn').removeAttribute('disabled')
 }

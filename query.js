@@ -1,4 +1,3 @@
-const db=require('./models');
 const XLSX=require('xlsx')
 const googleAuth = require('./js/google-auth')
 
@@ -80,6 +79,9 @@ const rowToItem = (row) => {
 const postPackage = async (reqBody)=>{
     // console.log(reqBody);    
     if( Array.isArray(reqBody) ){ //excel 업로드에 사용.
+        for(let row of reqBody){
+            // await postPackage(row);
+        }
     }
     else{
         const Item = rowToItem(reqBody);
@@ -112,7 +114,7 @@ const deletePackage = async (row)=>{
     }).promise()
 }
 const patchPackage = async (b)=>{
-    console.log(b);
+    // console.log(b);
     const Key = await tableKeys(b.row)
     await dynamodb.updateItem({
         ExpressionAttributeNames: {
