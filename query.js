@@ -14,24 +14,7 @@ const Sequelize = require('sequelize');
 // };
 // r();
 
-//https://developers.google.com/identity/sign-in/web/backend-auth
-const CLIENT_ID = '504818718989-cpm7gtj8bjncqbjl3gp65tpdhj4uhman.apps.googleusercontent.com';
-const {OAuth2Client} = require('google-auth-library');
-const client = new OAuth2Client(CLIENT_ID);
-async function verify(token) {
-  const ticket = await client.verifyIdToken({
-      idToken: token,
-      audience: CLIENT_ID,  // Specify the CLIENT_ID of the app that accesses the backend
-      // Or, if multiple clients access the backend:
-      //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
-  });
-  const payload = ticket.getPayload();
-  const userid = payload['sub'];
-  // If request specified a G Suite domain:
-  //const domain = payload['hd'];
-  return userid;
-}
-// verify().catch(console.error);
+const googleAuth = require('./js/google-auth')
 
 /*
 {columns, ren:rows}
@@ -103,7 +86,7 @@ const checkTrueuser = async (id_token)=>{ // 사용자를 확인.
         // throw 'token not received';
         return false
     }
-    const access_user = await verify(id_token)
+    const access_user = await googleAuth.verify(id_token)
     hash.update(access_user);
     const hashed_access_user = hash.digest('base64'); 
     const r = await dynamodb.getItem({

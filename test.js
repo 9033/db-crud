@@ -216,3 +216,8 @@ dynamodb.getItem({
         }
     },
 }).promise().then(console.log)
+
+// 구글 인증 파일을 분리.
+// const googleAuth = require('./js/google-auth')
+// const r = googleAuth.verify('a').then(console.log).catch(console.error)
+// console.log(r)
