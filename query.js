@@ -116,6 +116,35 @@ const deletePackage = async (row)=>{
 const patchPackage = async (b)=>{ // 지정한 컬럼만 값을 수정.
     // console.log(b);
     const Key = await tableKeys(b.row)
+    if(Object.keys(Key).includes(b.field)){ // 수정하려는 필드가 pk 인경우에는 지우고 다시 생성.
+        let newRow = {
+            ...b.row,
+        }
+        newRow[b.field] = b.toval;
+        const Item = rowToItem(newRow);
+        await dynamodb.transactWriteItems({
+            TransactItems:[
+                {
+                    Delete:{
+                        Key,
+                        TableName: "packages",
+                    },
+                },
+                {
+                    Put:{
+                        Item:{
+                            ...Item,
+                            create_time:{
+                                S:(new Date()).toISOString(),
+                            },
+                        },
+                        TableName: "packages"
+                    },
+                },
+            ],
+        }).promise()
+        return;
+    }
     await dynamodb.updateItem({
         ExpressionAttributeNames: {
             "#colName": b.field,
