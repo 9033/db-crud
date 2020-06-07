@@ -25,12 +25,10 @@ let modify=false;//추가 혹은 수정중?
 //수정 버튼을 클릭
 function clickupdate(e){
     const idx=e.target.parentNode.getAttribute('i')
-    const id=r[idx]['id'];
     const field=e.target.parentNode.getAttribute('f');                
-    const fromval=r[idx][field];
     const toval=e.target.previousSibling.value;
 
-    xmxhr('PATCH',{id,field,fromval,toval});
+    xmxhr('PATCH',{row:r[idx],field,toval});
 }
 
 //삭제 버튼을 클릭
@@ -39,9 +37,9 @@ function clickdel(e){
     modify=true;
     document.querySelectorAll("button.add, button.del").forEach(c=>{c.disabled=true;});
 
-    const id=e.target.parentNode.nextSibling.innerText;
+    const id=e.target.getAttribute('i');
     console.log(id);
-    xmxhr('DELETE',id);
+    xmxhr('DELETE',r[id]);
 }
 
 //추가 버튼을 클릭

@@ -15,45 +15,30 @@ html
             }
     body
         table
-            - const rr=r;//JSON.parse(r);
-            - const f=columns;//JSON.parse(columns);
-            - const jsonr=JSON.stringify(r).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
-            - const jsonf=JSON.stringify(columns).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+            - //r: rows of table, columns
+            - const rows=r;//JSON.parse(r);
+            - const cols=columns;//JSON.parse(columns); // 출력으로 지정한 컬럼만 보여줌.
+            - const jsonRows=JSON.stringify(rows).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
+            - const jsonCols=JSON.stringify(cols).replace(/\\/g,"\\\\").replace(/'/g,"\\'");
             tr
                 th
-                for i in f
-                    th=i                    
-            each row, idx in rr
+                for colName in cols
+                    th=colName                    
+            each row, idx in rows
                 tr
-                    //.data
                     td
                         button.del(i=idx disabled) 삭제
-                    each col, i in row
-                        case i
-                            when 'id'
-                            when 'createdAt'
-                            when 'updatedAt'
-                            when 'deletedAt'
-                                td(i=idx f=i) #{col}
-                            default
-                                td.cell(i=idx f=i) #{col}
+                    for colName in cols
+                        td.cell(i=idx f=colName) #{row[colName]}
             tr
                 td
                     button.add(disabled) 추가하기
-                each name, i in f
-                        case name
-                            when 'id'
-                            when 'createdAt'
-                            when 'updatedAt'
-                            when 'deletedAt'
-                                td
-                            default
-                                td.cell(name=name)
-                                    input.add(type='text' name=name disabled)
+                for colName in cols
+                    td.cell(name=colName)
+                        input.add(type='text' name=colName disabled)
         script.
-            const r=JSON.parse('!{jsonr}');
-            const fields=JSON.parse('!{jsonf}');
+            const r=JSON.parse('!{jsonRows}');
+            const fields=JSON.parse('!{jsonCols}');
         script(src="front.js")
         include views/excel.html
         include views/google-auth.html
-        
